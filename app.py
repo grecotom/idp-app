@@ -2,13 +2,16 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
+import json
+import os
 
 # Configuración
 st.set_page_config(page_title="IDP App", layout="wide")
 
 # Autenticación con Google Sheets
 scope = ["https://www.googleapis.com/auth/spreadsheets"]
-credentials = Credentials.from_service_account_file("credentials.json", scopes=scope)
+credentials_dict = json.loads(os.environ["GOOGLE_CREDENTIALS"])
+credentials = Credentials.from_service_account_info(credentials_dict, scopes=scope)
 client = gspread.authorize(credentials)
 
 # ID del Google Sheet (copiado del link)
