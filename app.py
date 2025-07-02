@@ -30,15 +30,22 @@ def merge_with_players(section_df):
     players_df = load_sheet("Players")
     return section_df.merge(players_df, on="Player Name", how="left")
 
-# Sidebar menu
-menu = st.sidebar.selectbox("Navigation", [
+# Sidebar menu as vertical buttons
+st.sidebar.title("Navigation")
+menu_options = [
     "Players",
     "Personality",
     "IDP_1",
     "IDP_2",
     "Skills",
     "Player Profile"
-])
+]
+menu = None
+for option in menu_options:
+    if st.sidebar.button(option):
+        menu = option
+if menu is None:
+    menu = menu_options[0]
 
 # Section 1 - Players
 if menu == "Players":
@@ -150,11 +157,14 @@ elif menu == "Player Profile":
 
     if selected:
         st.subheader(f"Player: {selected}")
-
         info = players_df[players_df["Player Name"] == selected].iloc[0]
         col1, col2 = st.columns([1, 3])
         with col1:
-            st.image(info.get("Profile Picture", ""), width=150)
+            profile_pic_url = info.get("Profile Picture", "")
+            if profile_pic_url.startswith("http"):
+                st.image(profile_pic_url, width=150)
+            else:
+                st.warning("No valid profile picture URL provided.")
             st.markdown(f"**Team:** {info.get('Team', '')}")
             st.markdown(f"**DOB:** {info.get('DOB', '')}")
             st.markdown(f"**Age:** {info.get('Age', '')}")
